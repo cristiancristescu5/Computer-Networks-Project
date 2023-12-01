@@ -67,6 +67,12 @@ build CMakeFiles/project.dir/Database/database.cpp.o: CXX_COMPILER__project_unsc
   OBJECT_DIR = CMakeFiles/project.dir
   OBJECT_FILE_DIR = CMakeFiles/project.dir/Database
 
+build CMakeFiles/project.dir/Ad/Advertisement.cpp.o: CXX_COMPILER__project_unscanned_Debug /home/cristi/Desktop/marketplace/project/Ad/Advertisement.cpp || cmake_object_order_depends_target_project
+  DEP_FILE = CMakeFiles/project.dir/Ad/Advertisement.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/project.dir
+  OBJECT_FILE_DIR = CMakeFiles/project.dir/Ad
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target project
@@ -75,7 +81,7 @@ build CMakeFiles/project.dir/Database/database.cpp.o: CXX_COMPILER__project_unsc
 #############################################
 # Link the executable project
 
-build project: CXX_EXECUTABLE_LINKER__project_Debug CMakeFiles/project.dir/main.cpp.o CMakeFiles/project.dir/Client/client.cpp.o CMakeFiles/project.dir/Database/database.cpp.o
+build project: CXX_EXECUTABLE_LINKER__project_Debug CMakeFiles/project.dir/main.cpp.o CMakeFiles/project.dir/Client/client.cpp.o CMakeFiles/project.dir/Database/database.cpp.o CMakeFiles/project.dir/Ad/Advertisement.cpp.o
   FLAGS = -g
   LINK_LIBRARIES = -lsqlite3
   OBJECT_DIR = CMakeFiles/project.dir
