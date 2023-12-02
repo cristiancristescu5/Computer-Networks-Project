@@ -9,5 +9,8 @@ add_executable(project main.cpp
         Database/database.h
         Database/database.cpp
         Ad/Advertisement.h
-        Ad/Advertisement.cpp)
+        Ad/Advertisement.cpp
+        bau.cpp
+        Utils/utils.h
+        Utils/utils.cpp)
 target_link_libraries(project sqlite3)

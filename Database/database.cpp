@@ -6,7 +6,6 @@
 #include <sqlite3.h>
 #include <stdexcept>
 #include <utility>
-#include <sqlite3.h>
 
 Database::Database(std::string dbURL) {
     this->dbURL = std::move(dbURL);

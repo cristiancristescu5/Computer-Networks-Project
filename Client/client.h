@@ -19,6 +19,8 @@ public:
 
     Client(std::string name, std::string password);
 
+    explicit Client(int clientSocket);
+
     std::string getName();
 
     std::string getPassword();
@@ -42,5 +44,6 @@ Client *loginUser(Database db, const std::string &username, const std::string &p
 
 void deleteUser(Database db, Client *client);
 
+int existsUser(Database*, int);
 
 #endif //PROJECT_CLIENT_H

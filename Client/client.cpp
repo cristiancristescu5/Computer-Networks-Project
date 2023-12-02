@@ -9,6 +9,21 @@
 
 #define QUERY_SIZE 1024
 
+
+Client::Client(std::string name, std::string password) {
+    this->name = std::move(name);
+    this->password = std::move(password);
+    this->id = -1;
+    this->clientSocket = -1;
+}
+
+Client::Client(int clientSocket) {
+    this->clientSocket = clientSocket;
+    this->id = -1;
+    this->name = nullptr;
+    this->password = nullptr;
+}
+
 Client::Client(std::string name, std::string password, int clientSocket, int id) {
     this->name = std::move(name);
     this->password = std::move(password);
@@ -34,11 +49,6 @@ int Client::getId() const {
 
 Client::~Client() {
     delete (this);
-}
-
-Client::Client(std::string name, std::string password) {
-    this->name = std::move(name);
-    this->password = std::move(password);
 }
 
 void Client::setClientSocket(int clientSocket) {
@@ -74,21 +84,21 @@ std::string addUser(Database db, Client *client) {
     }
 }
 
-int existsUser(Database *db, int id){
+int existsUser(Database *db, int id) {
     int conn;
-    try{
+    try {
         conn = db->getConnection();
-    }catch (std::invalid_argument &e){
-        std::cout<<"[server]"<<e.what()<<std::endl;
+    } catch (std::invalid_argument &e) {
+        std::cout << "[server]" << e.what() << std::endl;
         return 0;
     }
-    char* query = (char*) malloc(QUERY_SIZE * sizeof (char *));
+    char *query = (char *) malloc(QUERY_SIZE * sizeof(char *));
     sqlite3_stmt *stmt;
 
     sprintf(query, "select * from users where id = %d;", id);
 
-    conn = sqlite3_prepare_v2(db -> getDB(), query, -1, &stmt, 0);
-    while((conn = sqlite3_step(stmt))==SQLITE_ROW){
+    conn = sqlite3_prepare_v2(db->getDB(), query, -1, &stmt, 0);
+    while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
         free(query);
         return 1;
     }
@@ -113,7 +123,7 @@ Client *loginUser(Database db, const std::string &username, const std::string &p
     if (conn != SQLITE_OK) {
         return nullptr;
     }
-    Client *client = nullptr;
+    Client *client;
     while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const char *user = (const char *) sqlite3_column_text(stmt, 1);

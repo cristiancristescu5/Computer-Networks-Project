@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include "../Database/database.h"
+#include "../Client/client.h"
 
 class Advertisement {
 private:
@@ -45,11 +46,13 @@ public:
 
 std::string addAdvertisement(Advertisement *advertisement, int ownerId, Database *db);
 
-std::string getAllAdvertisements();
+std::string getAllAdvertisements(Database *db);
 
 std::string buyArticle(int id);
 
-std::string updateAd(Advertisement newAdd);
-int existsUser(Database*, int);
+std::string updateAd(Advertisement *newAdd);
+
+std::string removeAd(Database *db, int id, Client *client);
+
 
 #endif //PROJECT_ADVERTISEMENT_H
