@@ -16,13 +16,13 @@ private:
     float price;
     int ownerID;
     std::string status;
-    int catId;
+    std::string category;
 public:
-    Advertisement(int id, std::string description, float price, int ownerId, std::string status, int catId);
+    Advertisement(int id, std::string description, float price, int ownerId, std::string status, std::string category);
 
-    Advertisement(std::string description, float price, int ownerId, std::string status, int catId);
+    Advertisement(std::string description, float price, int ownerId, std::string status, std::string category);
 
-    Advertisement(std::string description, float price, std::string status, int catId);
+    Advertisement(std::string description, float price, std::string status, std::string category);
 
     std::string getDescription();
 
@@ -36,7 +36,7 @@ public:
 
     int getOwnerId();
 
-    int getCatId();
+    std::string getCategory();
 
     void setOwnerId(int id);
 
@@ -50,6 +50,6 @@ std::string getAllAdvertisements();
 std::string buyArticle(int id);
 
 std::string updateAd(Advertisement newAdd);
-
+int existsUser(Database*, int);
 
 #endif //PROJECT_ADVERTISEMENT_H

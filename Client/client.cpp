@@ -7,6 +7,8 @@
 #include <utility>
 #include <stdexcept>
 
+#define QUERY_SIZE 1024
+
 Client::Client(std::string name, std::string password, int clientSocket, int id) {
     this->name = std::move(name);
     this->password = std::move(password);
@@ -72,8 +74,29 @@ std::string addUser(Database db, Client *client) {
     }
 }
 
+int existsUser(Database *db, int id){
+    int conn;
+    try{
+        conn = db->getConnection();
+    }catch (std::invalid_argument &e){
+        std::cout<<"[server]"<<e.what()<<std::endl;
+        return 0;
+    }
+    char* query = (char*) malloc(QUERY_SIZE * sizeof (char *));
+    sqlite3_stmt *stmt;
+
+    sprintf(query, "select * from users where id = %d;", id);
+
+    conn = sqlite3_prepare_v2(db -> getDB(), query, -1, &stmt, 0);
+    while((conn = sqlite3_step(stmt))==SQLITE_ROW){
+        free(query);
+        return 1;
+    }
+    free(query);
+    return -1;
+}
+
 Client *loginUser(Database db, const std::string &username, const std::string &password) {
-    char *errmsg = 0;
     std::string query;
     sqlite3_stmt *stmt;
     query.append("select id, username, password from users where username = '")

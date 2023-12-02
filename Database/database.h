@@ -11,7 +11,7 @@ private:
     sqlite3* db;
     std::string dbURL;
 public:
-    Database(std::string dbURL);
+    explicit Database(std::string dbURL);
     int getConnection();
     sqlite3* getDB();
 };
