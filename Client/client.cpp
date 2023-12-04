@@ -20,8 +20,6 @@ Client::Client(std::string name, std::string password) {
 Client::Client(int clientSocket) {
     this->clientSocket = clientSocket;
     this->id = -1;
-    this->name = nullptr;
-    this->password = nullptr;
 }
 
 Client::Client(std::string name, std::string password, int clientSocket, int id) {
@@ -98,10 +96,12 @@ int existsUser(Database *db, int id) {
     sprintf(query, "select * from users where id = %d;", id);
 
     conn = sqlite3_prepare_v2(db->getDB(), query, -1, &stmt, 0);
-    while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
+    conn = sqlite3_step(stmt);
+    if (conn == SQLITE_ROW) {
         free(query);
         return 1;
     }
+
     free(query);
     return -1;
 }
@@ -124,14 +124,16 @@ Client *loginUser(Database db, const std::string &username, const std::string &p
         return nullptr;
     }
     Client *client;
-    while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
-        int id = sqlite3_column_int(stmt, 0);
-        const char *user = (const char *) sqlite3_column_text(stmt, 1);
-        const char *pass = (const char *) sqlite3_column_text(stmt, 2);
-        client = new Client(std::string(user), std::string(pass));
-        client->setID(id);
-        return client;
+    conn = sqlite3_step(stmt);
+    if (conn != SQLITE_ROW) {
+        return nullptr;
     }
-    return nullptr;
+    int id = sqlite3_column_int(stmt, 0);
+    const char *user = (const char *) sqlite3_column_text(stmt, 1);
+    const char *pass = (const char *) sqlite3_column_text(stmt, 2);
+    client = new Client(std::string(user), std::string(pass));
+    client->setID(id);
+
+    return client;
 }
 

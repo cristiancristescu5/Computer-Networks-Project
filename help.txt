@@ -1,0 +1,18 @@
+------------------------------------------------------------------
+Commands available on this server:
+>login <username> <password>: enters your account on the server
+>register <username> <password>: only creates an account, you can create an account only if you are not logged in the server
+>add_article <name> <description> <price> <category>: adds a new article
+>buy_article <article_id>: buys the article if it is unsold
+>get_all_articles <flags(-u | -a)>: prints all the available articles
+                -> -u: to get your articles
+                -> -a: to get all available articles
+>update article <article_id> <flags(-d | -c | -n)>: updates an existing article
+                -> -d: to update the description of the article
+                -> -c: to update the category of the article
+                -> -n: to update the name of the article
+>get_purchase_history: prints your purchase history
+>remove <article_id>: deletes an article
+>statistics: prints a set of statistics regarding the articles
+>logout
+------------------------------------------------------------------
