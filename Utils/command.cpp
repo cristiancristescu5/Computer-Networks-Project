@@ -8,14 +8,11 @@ Command::Command(char *command) {
     this->command = command;
     std::istringstream stream(this->command);
 
-    do {//parsing the command
-        std::string word;
-        stream >> word;
+    std::string word;
+
+    while(std::getline(stream, word, '|')) {
         this->tokens.push_back(word);
-    } while (stream);
-
-    this->tokens.pop_back();
-
+    }
 }
 
 std::string Command::getCommand() {

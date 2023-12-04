@@ -10,9 +10,10 @@
 #include "../Client/client.h"
 #include "../Ad/Article.h"
 #include "command.h"
+#include <vector>
 
 const std::string vec_status[] = {"sold", "unsold"};
-const std::string categories[] = {"vehicles", "electronic devices", "beauty", "household", "sport", "miscellaneous"};
+const std::vector<std::string> categories = {"vehicles", "electronic devices", "beauty", "household", "sport", "miscellaneous"};
 
 //thread -> Client
 std::string handleClient(Client *client, Database *db, Command *command);
@@ -23,7 +24,7 @@ std::string registerUser(Database *db, const std::string &name, const std::strin
 
 std::string logOut(Client *client);
 
-std::string addAdvertisement(Article *ad, int ownId);
+std::string addArticle(Article *ad, Client *client, Database *db);
 
 std::string removeAdvertisement(int userId, int adId);
 

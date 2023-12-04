@@ -68,6 +68,12 @@ void Client::setName(std::string name) {
 void Client::setPassword(std::string password) {
     this->password = std::move(password);
 }
+void Client::removePassword(){
+    this->password.clear();
+}
+void Client::removeName(){
+    this->name.clear();
+}
 
 std::string addUser(Database *db, const std::string &username, const std::string &password) {
     char *errmsg = nullptr;

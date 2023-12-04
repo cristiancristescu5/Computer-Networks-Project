@@ -90,6 +90,13 @@ std::string Article::getTitle() {
     return this->title;
 }
 
+Article::Article(std::string title, std::string description, float price, std::string category) {
+    this->title = std::move(title);
+    this->description = std::move(description);
+    this->price = price;
+    this->category = std::move(category);
+}
+
 std::string addArticle(Article *advertisement, int ownerId, Database *db) {
     int conn;
     try {//obtain connection
@@ -108,15 +115,15 @@ std::string addArticle(Article *advertisement, int ownerId, Database *db) {
 
     char *errmsg = nullptr;
     char q[QUERY_SIZE];
-
-    sprintf(q, "insert into articles(description, price, owner_id, category) values('%s', %f, %d, '%s')",
-            advertisement->getDescription().c_str(), advertisement->getPrice(), ownerId,
+    sprintf(q, "insert into articles(title,description, price, owner_id, category) values('%s','%s', %f, %d, '%s')",
+            advertisement->getTitle().c_str(), advertisement->getDescription().c_str(), advertisement->getPrice(),
+            ownerId,
             advertisement->getCategory().c_str());//preparing the query
 
     conn = sqlite3_exec(db->getDB(), q, nullptr, nullptr, &errmsg);//executing the query
 
     sqlite3_close(db->getDB());//closing connection
-
+    delete advertisement;
     if (conn == SQLITE_OK) {
         return "The advertisement has been published successfully.";
     } else {
@@ -142,6 +149,10 @@ std::string getAllArticles(Database *db) {
     conn = sqlite3_prepare_v2(db->getDB(), query, -1, &stmt, nullptr);
 
     if (conn != SQLITE_OK) {
+        free(query);
+        sqlite3_finalize(stmt);
+        sqlite3_close(db->getDB());
+
         return "Failed to fetch all ads.";
     }
     std::string response;
@@ -157,6 +168,7 @@ std::string getAllArticles(Database *db) {
         response.append(ad->toString());
         delete (ad);
     }
+    free(query);
     sqlite3_finalize(stmt);
     sqlite3_close(db->getDB());
     return response;
@@ -236,6 +248,7 @@ std::string removeArticle(Database *db, int id, Client *client) {
         return "The ad was removed successfully.";
     }
 }
+
 std::string getAllArticles(Database *db, int ownerID) {
     int conn;
 
@@ -246,17 +259,19 @@ std::string getAllArticles(Database *db, int ownerID) {
     }
 
     sqlite3_stmt *stmt;
-    std::string query = std::format("select id, title, description, price, status, owner_id, category from articles"
-                                    "where owner_id = {}", ownerID);
-    conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, nullptr);
+    char* q = (char *)(malloc(QUERY_SIZE * sizeof (char *)));
+    sprintf(q, "select id, title, description, price, status, owner_id, category from articles where owner_id = %d;", ownerID);
+    conn = sqlite3_prepare_v2(db->getDB(), q, -1, &stmt, 0);
 
     if (conn != SQLITE_OK) {
+        free(q);
         sqlite3_finalize(stmt);
         sqlite3_close(db->getDB());
         return "Failed to fetch data";
     }
+    std::cout<<"sunt aici in articole"<<std::endl;
     std::string response;
-    while ((conn = sqlite3_step(stmt)) != SQLITE_ROW) {
+    while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const char *title = (const char *) sqlite3_column_text(stmt, 1);
         const char *description = (const char *) sqlite3_column_text(stmt, 2);
@@ -268,6 +283,8 @@ std::string getAllArticles(Database *db, int ownerID) {
         response.append(ad->toString());
         delete (ad);
     }
+    std::cout<<"am trecut"<<std::endl;
+    free(q);
     sqlite3_close(db->getDB());
     sqlite3_finalize(stmt);
     return response;
@@ -319,13 +336,13 @@ std::string updateArticleDescription(Database *db, int id, int ownerId, std::str
         return "Failed to connect to the database.";
     }
 
-    auto* article = getArticle(db, id);
+    auto *article = getArticle(db, id);
 
-    if(article == nullptr){
+    if (article == nullptr) {
         return "This article doe not exist.";
     }
 
-    if(article->getOwnerId() != ownerId){
+    if (article->getOwnerId() != ownerId) {
         delete article;
         return "You do not own this article.";
     }
@@ -337,14 +354,14 @@ std::string updateArticleDescription(Database *db, int id, int ownerId, std::str
 
     delete article;
 
-    if(conn != SQLITE_ROW){
+    if (conn != SQLITE_ROW) {
         return "Failed to update the article's description.";
     }
 
     return "Article's description updated successfully";
 }
 
-std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle){
+std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle) {
     int conn;
 
     try {
@@ -353,13 +370,13 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle
         return "Failed to connect to the database.";
     }
 
-    auto* article = getArticle(db, id);
+    auto *article = getArticle(db, id);
 
-    if(article == nullptr){
+    if (article == nullptr) {
         return "This article doe not exist.";
     }
 
-    if(article->getOwnerId() != ownerId){
+    if (article->getOwnerId() != ownerId) {
         delete article;
         return "You do not own this article.";
     }
@@ -371,14 +388,14 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle
 
     delete article;
 
-    if(conn != SQLITE_ROW){
+    if (conn != SQLITE_ROW) {
         return "Failed to update the article's title.";
     }
 
     return "Article's title updated successfully";
 }
 
-std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory){
+std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory) {
     int conn;
 
     try {
@@ -387,13 +404,13 @@ std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCa
         return "Failed to connect to the database.";
     }
 
-    auto* article = getArticle(db, id);
+    auto *article = getArticle(db, id);
 
-    if(article == nullptr){
+    if (article == nullptr) {
         return "This article doe not exist.";
     }
 
-    if(article->getOwnerId() != ownerId){
+    if (article->getOwnerId() != ownerId) {
         delete article;
         return "You do not own this article.";
     }
@@ -405,7 +422,7 @@ std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCa
 
     delete article;
 
-    if(conn != SQLITE_ROW){
+    if (conn != SQLITE_ROW) {
         return "Failed to update the article's category.";
     }
 

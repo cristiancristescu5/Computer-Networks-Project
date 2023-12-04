@@ -15,4 +15,5 @@ Commands available on this server:
 >remove <article_id>: deletes an article
 >statistics: prints a set of statistics regarding the articles
 >logout
+>quit
 ------------------------------------------------------------------

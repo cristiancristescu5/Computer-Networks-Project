@@ -41,6 +41,10 @@ public:
     void printClient();
 
     ~Client();
+
+    void removePassword();
+
+    void removeName();
 };
 
 std::string addUser(Database *db, const std::string &username, const std::string &password);

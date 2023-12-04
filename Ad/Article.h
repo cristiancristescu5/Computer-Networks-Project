@@ -24,6 +24,8 @@ public:
 
     Article(std::string title, std::string description, float price, std::string status, std::string category);
 
+    Article(std::string, std::string, float, std::string);
+
     std::string getDescription();
 
     std::string getStatus();
