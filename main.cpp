@@ -109,6 +109,7 @@ void execute(void *arg) {
     struct thData tdL{};
     tdL = *((struct thData *) arg);
     Database *db = tdL.db;
+    Client *client = tdL.user;
     while (1) {
         if (read(tdL.cl, &buffer, BUFFER_SIZE) <= 0) {
             printf("[Thread %d]\n", tdL.idThread);
@@ -117,13 +118,13 @@ void execute(void *arg) {
 
         printf("[Thread %d]Message from client: %s\n", tdL.idThread, buffer);
 
-        if(strcmp(buffer, "help") == 0){
-            bzero(buffer, sizeof (buffer));
-            strcpy(buffer,help().c_str());
-        }else{
-            bzero(buffer, sizeof (buffer));
-            strcpy(buffer, getAllAdvertisements(db).c_str());
-        }
+        auto *command = new Command(buffer);
+
+        bzero(buffer, BUFFER_SIZE);
+
+        strcpy(buffer, handleClient(client, db, command).c_str());
+
+        delete command;
 
         printf("[Thread %d]Sending back to client:%s\n", tdL.idThread, buffer);
 
@@ -134,7 +135,7 @@ void execute(void *arg) {
         } else {
             printf("[Thread %d]Message sent successfully.\n", tdL.idThread);
         }
-        bzero(buffer, sizeof (buffer));
+        bzero(buffer, sizeof(buffer));
     }
 
 }

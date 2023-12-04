@@ -8,6 +8,7 @@
 #include <string>
 #include "../Database/database.h"
 #include <format>
+
 class Client {
 private:
     std::string name;
@@ -25,6 +26,10 @@ public:
 
     std::string getPassword();
 
+    void setName(std::string name);
+
+    void setPassword(std::string password);
+
     [[nodiscard]] int getClientSocket() const;
 
     void setClientSocket(int clientSocket);
@@ -38,12 +43,12 @@ public:
     ~Client();
 };
 
-std::string addUser(Database db, Client *client);
+std::string addUser(Database *db, const std::string &username, const std::string &password);
 
-Client *loginUser(Database db, const std::string &username, const std::string &password);
+Client *loginUser(Database *db, const std::string &username, const std::string &password);
 
 void deleteUser(Database db, Client *client);
 
-int existsUser(Database*, int);
+int existsUser(Database *, int);
 
 #endif //PROJECT_CLIENT_H

@@ -49,25 +49,19 @@ std::string addArticle(Article *advertisement, int ownerId, Database *db);
 
 std::string getAllArticles(Database *db);
 
-std::string getAllArticles(Database *db, Client *cl);
-
-std::string  getAllArticles(Database *db, int ownerID);
+std::string getAllArticles(Database *db, int ownerID);
 
 std::string getAllArticles(Database *db, std::string category);
 
-std::string getAllUnsoldArticles(Database *db);
+std::string buyArticle(Database *db, int id, int ownerId);
 
-std::string buyArticle(int id);
+std::string updateArticleDescription(Database *db, int id, int ownerId, std::string newDescription);
 
-std::string updateArticleDescription(int id, int ownerId, char* newDescription);
+std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle);
 
-std::string updateArticleTitle(int id, int ownerId, char* newTitle);
-
-std::string updateArticleCategory(int id, int ownerId, char* newCategory);
+std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory);
 
 std::string removeArticle(Database *db, int id, Client *client);
-
-
 
 
 #endif

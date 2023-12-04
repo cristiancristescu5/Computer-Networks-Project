@@ -236,8 +236,7 @@ std::string removeArticle(Database *db, int id, Client *client) {
         return "The ad was removed successfully.";
     }
 }
-
-std::string getAllArticles(Database *db, Client *cl) {
+std::string getAllArticles(Database *db, int ownerID) {
     int conn;
 
     try {
@@ -248,8 +247,7 @@ std::string getAllArticles(Database *db, Client *cl) {
 
     sqlite3_stmt *stmt;
     std::string query = std::format("select id, title, description, price, status, owner_id, category from articles"
-                                    "where owner_id = {}", cl->getId());
-
+                                    "where owner_id = {}", ownerID);
     conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, nullptr);
 
     if (conn != SQLITE_OK) {
@@ -273,5 +271,144 @@ std::string getAllArticles(Database *db, Client *cl) {
     sqlite3_close(db->getDB());
     sqlite3_finalize(stmt);
     return response;
-
 }
+
+std::string getAllArticles(Database *db, std::string category) {
+    int conn;
+
+    try {
+        conn = db->getConnection();
+    } catch (std::invalid_argument &e) {
+        return "Failed to connect to the database.";
+    }
+
+    sqlite3_stmt *stmt;
+    std::string query = std::format("select id, title, description, price, status, owner_id, category from articles"
+                                    "where category = {}", category);
+    conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, nullptr);
+
+    if (conn != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db->getDB());
+        return "Failed to fetch data";
+    }
+    std::string response;
+    while ((conn = sqlite3_step(stmt)) != SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        const char *title = (const char *) sqlite3_column_text(stmt, 1);
+        const char *description = (const char *) sqlite3_column_text(stmt, 2);
+        auto price = (float) sqlite3_column_double(stmt, 3);
+        const char *status = (const char *) sqlite3_column_text(stmt, 4);
+        int ownerId = sqlite3_column_int(stmt, 5);
+        const char *cat = (const char *) sqlite3_column_text(stmt, 6);
+        auto *ad = new Article(id, title, description, price, ownerId, status, cat);
+        response.append(ad->toString());
+        delete (ad);
+    }
+    sqlite3_close(db->getDB());
+    sqlite3_finalize(stmt);
+    return response;
+}
+
+std::string updateArticleDescription(Database *db, int id, int ownerId, std::string newDescription) {
+    int conn;
+
+    try {
+        conn = db->getConnection();
+    } catch (std::invalid_argument &e) {
+        return "Failed to connect to the database.";
+    }
+
+    auto* article = getArticle(db, id);
+
+    if(article == nullptr){
+        return "This article doe not exist.";
+    }
+
+    if(article->getOwnerId() != ownerId){
+        delete article;
+        return "You do not own this article.";
+    }
+
+    std::string query = std::format("update articles set description = {} where id = {} and owner_id = {}",
+                                    newDescription, id, ownerId);
+
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    delete article;
+
+    if(conn != SQLITE_ROW){
+        return "Failed to update the article's description.";
+    }
+
+    return "Article's description updated successfully";
+}
+
+std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle){
+    int conn;
+
+    try {
+        conn = db->getConnection();
+    } catch (std::invalid_argument &e) {
+        return "Failed to connect to the database.";
+    }
+
+    auto* article = getArticle(db, id);
+
+    if(article == nullptr){
+        return "This article doe not exist.";
+    }
+
+    if(article->getOwnerId() != ownerId){
+        delete article;
+        return "You do not own this article.";
+    }
+
+    std::string query = std::format("update articles set title = {} where id = {} and owner_id = {}",
+                                    newTitle, id, ownerId);
+
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    delete article;
+
+    if(conn != SQLITE_ROW){
+        return "Failed to update the article's title.";
+    }
+
+    return "Article's title updated successfully";
+}
+
+std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory){
+    int conn;
+
+    try {
+        conn = db->getConnection();
+    } catch (std::invalid_argument &e) {
+        return "Failed to connect to the database.";
+    }
+
+    auto* article = getArticle(db, id);
+
+    if(article == nullptr){
+        return "This article doe not exist.";
+    }
+
+    if(article->getOwnerId() != ownerId){
+        delete article;
+        return "You do not own this article.";
+    }
+
+    std::string query = std::format("update articles set category = {} where id = {} and owner_id = {}",
+                                    newCategory, id, ownerId);
+
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    delete article;
+
+    if(conn != SQLITE_ROW){
+        return "Failed to update the article's category.";
+    }
+
+    return "Article's category updated successfully";
+}
+

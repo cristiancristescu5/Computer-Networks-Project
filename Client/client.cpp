@@ -61,20 +61,28 @@ void Client::printClient() {
     std::cout << this->id << " " << this->name << " " << this->password << std::endl;
 }
 
-std::string addUser(Database db, Client *client) {
+void Client::setName(std::string name) {
+    this->name = std::move(name);
+}
+
+void Client::setPassword(std::string password) {
+    this->password = std::move(password);
+}
+
+std::string addUser(Database *db, const std::string &username, const std::string &password) {
     char *errmsg = nullptr;
     std::string query;
     query.append("insert into users(username, password) values('")
-            .append(client->getName()).append("'")
+            .append(username).append("'")
             .append(",")
-            .append("'").append(client->getPassword()).append("')");
+            .append("'").append(password).append("')");
     int conn;
     try {
-        conn = db.getConnection();
+        conn = db->getConnection();
     } catch (std::invalid_argument &e) {
         return "There was a problem connecting to the database!";
     }
-    conn = sqlite3_exec(db.getDB(), query.c_str(), nullptr, nullptr, &errmsg);
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, &errmsg);
     if (conn != SQLITE_OK) {
         return "The user already exists!";
     } else {
@@ -106,19 +114,19 @@ int existsUser(Database *db, int id) {
     return -1;
 }
 
-Client *loginUser(Database db, const std::string &username, const std::string &password) {
+Client *loginUser(Database *db, const std::string &username, const std::string &password) {
     std::string query;
     sqlite3_stmt *stmt;
     query.append("select id, username, password from users where username = '")
             .append(username).append("' and password = '").append(password).append("'");
     int conn;
     try {
-        conn = db.getConnection();
+        conn = db->getConnection();
     } catch (std::invalid_argument &e) {
         return nullptr;
     }
 
-    conn = sqlite3_prepare_v2(db.getDB(), query.c_str(), -1, &stmt, 0);
+    conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, 0);
 
     if (conn != SQLITE_OK) {
         return nullptr;

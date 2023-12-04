@@ -7,16 +7,21 @@
 
 #include <string>
 #include <iostream>
-#include <array>
+#include <vector>
 
 class Command {
-public:
+private:
     std::string command;
-    std::array<std::string, 10> tokens;
+    std::vector<std::string> tokens;
+public:
+    Command(char *command);
 
+    std::string getCommand();
+
+    std::vector<std::string> getTokens();
+
+    unsigned long getSize();
 };
-
-
 
 
 #endif //PROJECT_COMMAND_H

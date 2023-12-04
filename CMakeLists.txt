@@ -13,5 +13,6 @@ add_executable(project main.cpp
         bau.cpp
         Utils/utils.h
         Utils/utils.cpp
-        Utils/command.h)
+        Utils/command.h
+        Utils/command.cpp)
 target_link_libraries(project sqlite3)
