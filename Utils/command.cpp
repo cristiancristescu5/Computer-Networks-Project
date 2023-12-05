@@ -3,15 +3,29 @@
 //
 #include "command.h"
 #include <sstream>
+#include <regex>
+#include "string"
+
 
 Command::Command(char *command) {
     this->command = command;
-    std::istringstream stream(this->command);
+    std::regex rgx("\"([^\"]*)\"|(\\S+)");
+    std::smatch match;
+    std::string com = command;
+    int i = 0;
 
-    std::string word;
-
-    while(std::getline(stream, word, '|')) {
-        this->tokens.push_back(word);
+    while (std::regex_search(com, match, rgx)) {
+        std::string token;
+        if(i == 0){
+            token = match[0].str();
+        }else{
+            token = match[1].str();
+        }
+        if (!token.empty()) {
+            this->tokens.push_back(token);
+        }
+        com = match.suffix().str();
+        i++;
     }
 }
 

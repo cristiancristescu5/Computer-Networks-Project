@@ -8,15 +8,27 @@
 #include <string>
 #include <array>
 #include "../Client/client.h"
-#include "../Ad/Article.h"
+#include "../Ad/article.h"
 #include "command.h"
 #include <vector>
+#include <mutex>
+
+struct thData {
+    int idThread;
+    int cl;
+    Database *db;
+    Client *user;
+    std::mutex &mutex;
+
+    thData(int id, int c, Database *d, Client *us, std::mutex &m) : mutex(m), idThread(id), cl(c), db(d), user(us) {};
+};
 
 const std::string vec_status[] = {"sold", "unsold"};
-const std::vector<std::string> categories = {"vehicles", "electronic devices", "beauty", "household", "sport", "miscellaneous"};
+const std::vector<std::string> categories = {"vehicles", "electronic devices", "beauty", "household", "sport",
+                                             "miscellaneous"};
 
 //thread -> Client
-std::string handleClient(Client *client, Database *db, Command *command);
+std::string handleClient(Client *client, Database *db, Command *command, std::mutex&);
 
 std::string login(Database *db, const std::string &name, const std::string &password, Client *client);
 
@@ -24,9 +36,7 @@ std::string registerUser(Database *db, const std::string &name, const std::strin
 
 std::string logOut(Client *client);
 
-std::string addArticle(Article *ad, Client *client, Database *db);
-
-std::string removeAdvertisement(int userId, int adId);
+std::string addArticle(article *ad, Client *client, Database *db);
 
 std::string buyArticle(int articleId, int userId, Client *client);
 

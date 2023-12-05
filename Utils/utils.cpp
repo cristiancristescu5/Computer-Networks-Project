@@ -1,6 +1,3 @@
-//
-// Created by cristi on 12/2/23.
-//
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -8,21 +5,38 @@
 #include "utils.h"
 
 
-std::string handleClient(Client *client, Database *db, Command *command) {
+std::string handleClient(Client *client, Database *db, Command *command, std::mutex &mutex) {
     std::cout << client->getId() << std::endl;
+    std::string response;
     if (command->getSize() == 1 && command->getCommand() == "help") {
-        return help();
+        mutex.lock();
+        response = help();
+        mutex.unlock();
+        return response;
     }
     if (command->getSize() == 1 && command->getCommand() == "logout") {
-        return logOut(client);
+        mutex.lock();
+        response = logOut(client);
+        mutex.unlock();
+        return response;
+    }
+
+    if(command->getSize()==1 && command->getTokens()[0] == "quit"){
+        return "You left the server.";
     }
 
     if (command->getSize() == 3) {
         if (command->getTokens()[0] == "login") {//login <> <>
-            return login(db, command->getTokens()[1], command->getTokens()[2], client);
+            mutex.lock();
+            response = login(db, command->getTokens()[1], command->getTokens()[2], client);
+            mutex.unlock();
+            return response;
         }
         if (command->getTokens()[0] == "register") {//register <> <>
-            return registerUser(db, command->getTokens()[1], command->getTokens()[2], client);
+            mutex.lock();
+            response = registerUser(db, command->getTokens()[1], command->getTokens()[2], client);
+            mutex.unlock();
+            return response;
         }
     }
     if (command->getSize() == 5) {
@@ -36,26 +50,52 @@ std::string handleClient(Client *client, Database *db, Command *command) {
                 return "Invalid price.";
             }
             std::string category = command->getTokens()[4];
-            return addArticle(new Article(name, description, price, category), client, db);
+            mutex.lock();
+            response = addArticle(new article(name, description, price, category), client, db);
+            mutex.unlock();
+            return response;
         }
     }
     if (command->getSize() == 2) {
-        if (command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-a") {//fac aici functie on logat
-            return getAllArticles(db);
+        if (command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-a") {
+            if (client->getId() == -1) {
+                return "You cannot perform this action. Log in first.";
+            } else {
+                mutex.lock();
+                response = getAllArticles(db);
+                mutex.unlock();
+                return response;
+            }
         }
-        if (command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-u") {//fac aici functi om logat
+        if (command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-u") {
             if (client->getId() != -1) {
-                std::cout << "aici la articcols" << std::endl;
-                return getAllArticles(db, client->getId());
+                mutex.lock();
+                response = getAllArticles(db, client->getId());
+                mutex.unlock();
+                return response;
             } else {
                 return "You cannot perform this action. Log in first.";
             }
         }
+
+        if(command->getTokens()[0] == "remove_article"){
+            if(client->getId()==-1){
+                return "You cannot perform this action. Log in first.";
+            }else{
+                int id;
+                try{
+                    id = std::stoi(command->getTokens()[1]);
+                }catch (std::invalid_argument &e){
+                    return "Invalid argument";
+                }
+                mutex.lock();
+                response = removeArticle(db, id, client);
+                mutex.unlock();
+                return response;
+            }
+        }
     }
-    if (client->getId() != -1) {
-        return "bau bau bnau";
-    }
-    return "bau";
+    return "Invalid command.";
 }
 
 std::string help() {
@@ -96,7 +136,7 @@ std::string registerUser(Database *db, const std::string &name, const std::strin
     return addUser(db, name, password);
 }
 
-std::string addArticle(Article *article, Client *client, Database *db) {
+std::string addArticle(article *article, Client *client, Database *db) {
     if (std::ranges::find(categories, article->getCategory()) == categories.end()) {
         return "Invalid category.";
     }
@@ -119,3 +159,4 @@ std::string logOut(Client *client) {
 
     return "You logged out successful";
 }
+

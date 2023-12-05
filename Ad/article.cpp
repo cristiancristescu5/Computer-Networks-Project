@@ -1,7 +1,7 @@
 //
 // Created by cristi on 12/1/23.
 //
-#include "Article.h"
+#include "article.h"
 #include <string>
 #include <utility>
 #include <stdexcept>
@@ -12,7 +12,7 @@
 #define QUERY_SIZE 1024
 
 
-Article::Article(std::string title, std::string description, float price, int ownerId, std::string status,
+article::article(std::string title, std::string description, float price, int ownerId, std::string status,
                  std::string category) {
     this->description = std::move(description);
     this->price = price;
@@ -22,7 +22,7 @@ Article::Article(std::string title, std::string description, float price, int ow
     this->title = std::move(title);
 }
 
-Article::Article(int id, std::string title, std::string description, float price, int ownerId, std::string status,
+article::article(int id, std::string title, std::string description, float price, int ownerId, std::string status,
                  std::string category) {
     this->id = id;
     this->title = std::move(title);
@@ -33,7 +33,7 @@ Article::Article(int id, std::string title, std::string description, float price
     this->category = std::move(category);
 }
 
-Article::Article(std::string title, std::string description, float price, std::string status, std::string category) {
+article::article(std::string title, std::string description, float price, std::string status, std::string category) {
     this->description = std::move(description);
     this->price = price;
     this->title = std::move(title);
@@ -41,40 +41,40 @@ Article::Article(std::string title, std::string description, float price, std::s
     this->category = std::move(category);
 }
 
-std::string Article::getDescription() {
+std::string article::getDescription() {
     return this->description;
 }
 
-std::string Article::getStatus() {
+std::string article::getStatus() {
     return this->status;
 }
 
-int Article::getId() {
+int article::getId() {
     return this->id;
 }
 
-void Article::setId(int id) {
+void article::setId(int id) {
     this->id = id;
 }
 
-float Article::getPrice() {
+float article::getPrice() {
     return this->price;
 }
 
-int Article::getOwnerId() {
+int article::getOwnerId() {
     return this->ownerID;
 }
 
 
-void Article::setOwnerId(int id) {
+void article::setOwnerId(int id) {
     this->ownerID = id;
 }
 
-std::string Article::getCategory() {
+std::string article::getCategory() {
     return this->category;
 }
 
-std::string Article::toString() {
+std::string article::toString() {
     std::string response;
     response.append("Title: ").append(this->getTitle()).append("\n")
             .append("Id: ").append(std::to_string(this->id)).append("\n")
@@ -86,18 +86,18 @@ std::string Article::toString() {
     return response;
 }
 
-std::string Article::getTitle() {
+std::string article::getTitle() {
     return this->title;
 }
 
-Article::Article(std::string title, std::string description, float price, std::string category) {
+article::article(std::string title, std::string description, float price, std::string category) {
     this->title = std::move(title);
     this->description = std::move(description);
     this->price = price;
     this->category = std::move(category);
 }
 
-std::string addArticle(Article *advertisement, int ownerId, Database *db) {
+std::string addArticle(article *advertisement, int ownerId, Database *db) {
     int conn;
     try {//obtain connection
         conn = db->getConnection();
@@ -164,7 +164,7 @@ std::string getAllArticles(Database *db) {
         const char *status = (const char *) sqlite3_column_text(stmt, 4);
         int ownerId = sqlite3_column_int(stmt, 5);
         const char *category = (const char *) sqlite3_column_text(stmt, 6);
-        auto *ad = new Article(id, title, description, price, ownerId, status, category);
+        auto *ad = new article(id, title, description, price, ownerId, status, category);
         response.append(ad->toString());
         delete (ad);
     }
@@ -174,7 +174,7 @@ std::string getAllArticles(Database *db) {
     return response;
 }
 
-Article *getArticle(Database *db, int id) {
+article *getArticle(Database *db, int id) {
     int conn;
     try {
         conn = db->getConnection();
@@ -205,7 +205,7 @@ Article *getArticle(Database *db, int id) {
     const char *status = (const char *) sqlite3_column_text(stmt, 4);
     int ownerId = sqlite3_column_int(stmt, 5);
     const char *category = (const char *) sqlite3_column_text(stmt, 6);
-    auto *ad = new Article(adId, title, description, price, ownerId, status, category);
+    auto *ad = new article(adId, title, description, price, ownerId, status, category);
     std::cout << ad->toString();
     sqlite3_close(db->getDB());
     sqlite3_finalize(stmt);
@@ -259,8 +259,9 @@ std::string getAllArticles(Database *db, int ownerID) {
     }
 
     sqlite3_stmt *stmt;
-    char* q = (char *)(malloc(QUERY_SIZE * sizeof (char *)));
-    sprintf(q, "select id, title, description, price, status, owner_id, category from articles where owner_id = %d;", ownerID);
+    char *q = (char *) (malloc(QUERY_SIZE * sizeof(char *)));
+    sprintf(q, "select id, title, description, price, status, owner_id, category from articles where owner_id = %d;",
+            ownerID);
     conn = sqlite3_prepare_v2(db->getDB(), q, -1, &stmt, 0);
 
     if (conn != SQLITE_OK) {
@@ -269,7 +270,6 @@ std::string getAllArticles(Database *db, int ownerID) {
         sqlite3_close(db->getDB());
         return "Failed to fetch data";
     }
-    std::cout<<"sunt aici in articole"<<std::endl;
     std::string response;
     while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
@@ -279,11 +279,16 @@ std::string getAllArticles(Database *db, int ownerID) {
         const char *status = (const char *) sqlite3_column_text(stmt, 4);
         int ownerId = sqlite3_column_int(stmt, 5);
         const char *category = (const char *) sqlite3_column_text(stmt, 6);
-        auto *ad = new Article(id, title, description, price, ownerId, status, category);
+        auto *ad = new article(id, title, description, price, ownerId, status, category);
         response.append(ad->toString());
         delete (ad);
     }
-    std::cout<<"am trecut"<<std::endl;
+    if (response.empty()) {
+        free(q);
+        sqlite3_close(db->getDB());
+        sqlite3_finalize(stmt);
+        return "You do not own any article.";
+    }
     free(q);
     sqlite3_close(db->getDB());
     sqlite3_finalize(stmt);
@@ -318,7 +323,7 @@ std::string getAllArticles(Database *db, std::string category) {
         const char *status = (const char *) sqlite3_column_text(stmt, 4);
         int ownerId = sqlite3_column_int(stmt, 5);
         const char *cat = (const char *) sqlite3_column_text(stmt, 6);
-        auto *ad = new Article(id, title, description, price, ownerId, status, cat);
+        auto *ad = new article(id, title, description, price, ownerId, status, cat);
         response.append(ad->toString());
         delete (ad);
     }
@@ -358,7 +363,7 @@ std::string updateArticleDescription(Database *db, int id, int ownerId, std::str
         return "Failed to update the article's description.";
     }
 
-    return "Article's description updated successfully";
+    return "article's description updated successfully";
 }
 
 std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle) {
@@ -392,7 +397,7 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle
         return "Failed to update the article's title.";
     }
 
-    return "Article's title updated successfully";
+    return "article's title updated successfully";
 }
 
 std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory) {
@@ -426,6 +431,6 @@ std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCa
         return "Failed to update the article's category.";
     }
 
-    return "Article's category updated successfully";
+    return "article's category updated successfully";
 }
 

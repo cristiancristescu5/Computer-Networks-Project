@@ -2,7 +2,7 @@
 #include "Client/client.h"
 #include "Database/database.h"
 #include <vector>
-#include "Ad/Article.h"
+#include "Ad/article.h"
 #include "Utils/utils.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,6 +12,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <pthread.h>
+#include <mutex>
 
 const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
 
@@ -20,13 +21,6 @@ const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
 #define PORT 2908
 
 extern int errno;
-
-typedef struct thData {
-    int idThread;
-    int cl;
-    Database *db;
-    Client *user;
-} thData;
 
 static void *treat(void *);
 
@@ -39,6 +33,8 @@ int main() {
     int sd;
     pthread_t th[100];
     int i = 0;
+    std::mutex mutex;
+
 //    std::cout<<help()<<std::endl;
 
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -79,11 +75,8 @@ int main() {
             continue;
         }
 
-        td = (struct thData *) malloc(sizeof(struct thData));
-        td->idThread = i++;
-        td->cl = client;
-        td->db = db;
-        td->user = new Client(client);
+        td = new thData(i, client, db, new Client(client), mutex);
+
 
         pthread_create(&th[i], nullptr, &treat, td);
 
@@ -92,12 +85,12 @@ int main() {
 
 
 static void *treat(void *arg) {
-    struct thData tdL{};
-    tdL = *((struct thData *) arg);
+    thData tdL = *((thData *) arg);
     printf("[thread]- %d - Waiting for the command...\n", tdL.idThread);
     fflush(stdout);
     pthread_detach(pthread_self());
     execute((struct thData *) arg);
+    close(tdL.cl);
     close((intptr_t) arg);
     return (nullptr);
 
@@ -106,8 +99,7 @@ static void *treat(void *arg) {
 
 void execute(void *arg) {
     char buffer[BUFFER_SIZE];
-    struct thData tdL{};
-    tdL = *((struct thData *) arg);
+    thData tdL = *((struct thData *) arg);
     Database *db = tdL.db;
     Client *client = tdL.user;
     while (1) {
@@ -122,7 +114,7 @@ void execute(void *arg) {
 
         bzero(buffer, BUFFER_SIZE);
 
-        strcpy(buffer, handleClient(client, db, command).c_str());
+        strcpy(buffer, handleClient(client, db, command, tdL.mutex).c_str());
 
         delete command;
 
@@ -134,6 +126,10 @@ void execute(void *arg) {
             perror("[Thread]Error writing to the client.\n");
         } else {
             printf("[Thread %d]Message sent successfully.\n", tdL.idThread);
+        }
+        if(strstr(buffer, "left") != nullptr){
+            close(tdL.cl);
+            break;
         }
         bzero(buffer, sizeof(buffer));
     }

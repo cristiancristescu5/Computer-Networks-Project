@@ -6,7 +6,7 @@
 #include "../Database/database.h"
 #include "../Client/client.h"
 
-class Article {
+class article {
 private:
     int id;
     std::string description;
@@ -16,15 +16,15 @@ private:
     std::string category;
     std::string title;
 public:
-    Article(int id, std::string title, std::string description, float price, int ownerId, std::string status,
+    article(int id, std::string title, std::string description, float price, int ownerId, std::string status,
             std::string category);
 
-    Article(std::string title, std::string description, float price, int ownerId, std::string status,
+    article(std::string title, std::string description, float price, int ownerId, std::string status,
             std::string category);
 
-    Article(std::string title, std::string description, float price, std::string status, std::string category);
+    article(std::string title, std::string description, float price, std::string status, std::string category);
 
-    Article(std::string, std::string, float, std::string);
+    article(std::string, std::string, float, std::string);
 
     std::string getDescription();
 
@@ -47,7 +47,7 @@ public:
     std::string getTitle();
 };
 
-std::string addArticle(Article *advertisement, int ownerId, Database *db);
+std::string addArticle(article *advertisement, int ownerId, Database *db);
 
 std::string getAllArticles(Database *db);
 
@@ -55,7 +55,9 @@ std::string getAllArticles(Database *db, int ownerID);
 
 std::string getAllArticles(Database *db, std::string category);
 
-std::string buyArticle(Database *db, int id, int ownerId);
+std::string getAllArticles(Database *db, float down, float up); //-p
+
+std::string buyArticle(Database *db, int id, Client *client);
 
 std::string updateArticleDescription(Database *db, int id, int ownerId, std::string newDescription);
 

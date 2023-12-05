@@ -8,8 +8,8 @@ add_executable(project main.cpp
         Client/client.cpp
         Database/database.h
         Database/database.cpp
-        Ad/Article.h
-        Ad/Article.cpp
+        Ad/article.h
+        Ad/article.cpp
         bau.cpp
         Utils/utils.h
         Utils/utils.cpp
