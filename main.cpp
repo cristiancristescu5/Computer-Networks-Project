@@ -2,7 +2,7 @@
 #include "Client/client.h"
 #include "Database/database.h"
 #include <vector>
-#include "Ad/article.h"
+#include "Article/article.h"
 #include "Utils/utils.h"
 #include <sys/socket.h>
 #include <netinet/in.h>

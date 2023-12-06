@@ -5,8 +5,6 @@
 #include <string>
 #include <utility>
 #include <stdexcept>
-#include <cstring>
-#include "../Client/client.h"
 #include <format>
 
 #define QUERY_SIZE 1024
@@ -352,21 +350,23 @@ std::string updateArticleDescription(Database *db, int id, int ownerId, std::str
         return "You do not own this article.";
     }
 
-    std::string query = std::format("update articles set description = {} where id = {} and owner_id = {}",
+    std::string query = std::format("update articles set description ='{}' where id = {} and owner_id = {};",
                                     newDescription, id, ownerId);
+
+    std ::cout<<query<<std::endl;
 
     conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
 
     delete article;
 
-    if (conn != SQLITE_ROW) {
+    if (conn != SQLITE_OK) {
         return "Failed to update the article's description.";
     }
 
     return "article's description updated successfully";
 }
 
-std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle) {
+std::string updateArticleTitle(Database *db, int id, int ownerId, std::string newTitle) {
     int conn;
 
     try {
@@ -400,7 +400,7 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle
     return "article's title updated successfully";
 }
 
-std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory) {
+std::string updateArticleCategory(Database *db, int id, int ownerId, std::string newCategory) {
     int conn;
 
     try {

@@ -61,9 +61,9 @@ std::string buyArticle(Database *db, int id, Client *client);
 
 std::string updateArticleDescription(Database *db, int id, int ownerId, std::string newDescription);
 
-std::string updateArticleTitle(Database *db, int id, int ownerId, char *newTitle);
+std::string updateArticleTitle(Database *db, int id, int ownerId, std::string newTitle);
 
-std::string updateArticleCategory(Database *db, int id, int ownerId, char *newCategory);
+std::string updateArticleCategory(Database *db, int id, int ownerId, std::string newCategory);
 
 std::string removeArticle(Database *db, int id, Client *client);
 

@@ -1,16 +1,17 @@
 # ninja log v5
-1	661	1701808993290536165	CMakeFiles/project.dir/main.cpp.o	fc31219825e9e2ba
+0	669	1701859177393647876	CMakeFiles/project.dir/Ad/article.cpp.o	9c95aef95d15ae2c
+0	561	1701858242568760045	CMakeFiles/project.dir/main.cpp.o	fc31219825e9e2ba
 1	19	1701691575724257556	CMakeFiles/project.dir/bau.cpp.o	6edb64bbeac67557
 1	2043	1701807165184199718	CMakeFiles/project.dir/Utils/command.cpp.o	cff17d06120ca0ae
-0	9	1701809368729260525	build.ninja	4d938848d1f0e090
-661	756	1701808993382536804	project	591ae46e78aa7a4b
+0	9	1701859384964956942	build.ninja	4d938848d1f0e090
+669	733	1701859177457647662	project	99ada867417e4ae6
 1	376	1701691576080252653	CMakeFiles/project.dir/Database/database.cpp.o	9da615aff9a79b6e
 1	294	1701599477558860576	CMakeFiles/project.dir/Ad/Advertisement.cpp.o	5b78a182f00e806f
-0	616	1701808637588221865	CMakeFiles/project.dir/Utils/utils.cpp.o	1c260070e93aaa44
+1	542	1701858695963250188	CMakeFiles/project.dir/Utils/utils.cpp.o	1c260070e93aaa44
 1	802	1701808247154303623	CMakeFiles/project.dir/Ad/Article.cpp.o	8800471f1d591b84
 0	221	1701446241239685594	CMakeFiles/project.dir/client.cpp.o	f3c6aaab4dc45279
 1	500	1701708746615130402	CMakeFiles/project.dir/Client/client.cpp.o	c491970dfda7e5fb
-1	579	1701809380621340567	CMakeFiles/project.dir/main.cpp.o	fc31219825e9e2ba
-1	865	1701809380909342172	CMakeFiles/project.dir/Utils/utils.cpp.o	1c260070e93aaa44
-1	870	1701809380913342194	CMakeFiles/project.dir/Ad/article.cpp.o	9c95aef95d15ae2c
-870	944	1701809380985342595	project	214ef8f58aafee07
+1	571	1701859511868534558	CMakeFiles/project.dir/Utils/utils.cpp.o	1c260070e93aaa44
+1	731	1701859512028534025	CMakeFiles/project.dir/Article/article.cpp.o	8d85493cac0da8f9
+0	466	1701859527068483969	CMakeFiles/project.dir/main.cpp.o	fc31219825e9e2ba
+466	538	1701859527140483728	project	1e541c4887a82a9

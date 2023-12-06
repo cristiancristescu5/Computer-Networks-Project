@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "utils.h"
+#include "../Article/article.h"
 
 
 std::string handleClient(Client *client, Database *db, Command *command, std::mutex &mutex) {
@@ -12,16 +13,19 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
         mutex.lock();
         response = help();
         mutex.unlock();
+
         return response;
     }
     if (command->getSize() == 1 && command->getCommand() == "logout") {
         mutex.lock();
         response = logOut(client);
         mutex.unlock();
+
         return response;
     }
 
-    if(command->getSize()==1 && command->getTokens()[0] == "quit"){
+    if (command->getSize() == 1 && command->getTokens()[0] == "quit") {
+
         return "You left the server.";
     }
 
@@ -30,13 +34,52 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             mutex.lock();
             response = login(db, command->getTokens()[1], command->getTokens()[2], client);
             mutex.unlock();
+
             return response;
         }
         if (command->getTokens()[0] == "register") {//register <> <>
             mutex.lock();
             response = registerUser(db, command->getTokens()[1], command->getTokens()[2], client);
             mutex.unlock();
+
             return response;
+        }
+    }
+
+    if (command->getSize() == 4) {
+        if (command->getTokens()[0] == "update_article") {
+            if (client->getId() == -1) {
+
+                return FORBIDDEN;
+            }
+            int artId;
+            try {
+                artId = std::stoi(command->getTokens()[2]);
+            } catch (std::invalid_argument &e) {
+
+                return "Invalid argument.";
+            }
+            if (command->getTokens()[1] == "-d") {
+                mutex.lock();
+                response = updateArticleDescription(db, artId, client->getId(), command->getTokens()[3]);
+                mutex.unlock();
+
+                return response;
+            }
+            if (command->getTokens()[1] == "-c") {
+                mutex.lock();
+                response = updateArticleCategory(db, artId, client->getId(), command->getTokens()[3]);
+                mutex.unlock();
+
+                return response;
+            }
+            if (command->getTokens()[1] == "-t") {
+                mutex.lock();
+                response = updateArticleTitle(db, artId, client->getId(), command->getTokens()[3]);
+                mutex.unlock();
+
+                return response;
+            }
         }
     }
     if (command->getSize() == 5) {
@@ -46,7 +89,9 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             float price;
             try {
                 price = std::stof(command->getTokens()[3]);
-            } catch (std::invalid_argument &e) {
+            } catch (
+                    std::invalid_argument &e
+            ) {
                 return "Invalid price.";
             }
             std::string category = command->getTokens()[4];
@@ -59,11 +104,13 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
     if (command->getSize() == 2) {
         if (command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-a") {
             if (client->getId() == -1) {
-                return "You cannot perform this action. Log in first.";
+
+                return FORBIDDEN;
             } else {
                 mutex.lock();
                 response = getAllArticles(db);
                 mutex.unlock();
+
                 return response;
             }
         }
@@ -72,25 +119,29 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 mutex.lock();
                 response = getAllArticles(db, client->getId());
                 mutex.unlock();
+
                 return response;
             } else {
-                return "You cannot perform this action. Log in first.";
+
+                return FORBIDDEN;
             }
         }
 
-        if(command->getTokens()[0] == "remove_article"){
-            if(client->getId()==-1){
-                return "You cannot perform this action. Log in first.";
-            }else{
+        if (command->getTokens()[0] == "remove_article") {
+            if (client->getId() == -1) {
+
+                return FORBIDDEN;
+            } else {
                 int id;
-                try{
+                try {
                     id = std::stoi(command->getTokens()[1]);
-                }catch (std::invalid_argument &e){
+                } catch (std::invalid_argument &e) {
                     return "Invalid argument";
                 }
                 mutex.lock();
                 response = removeArticle(db, id, client);
                 mutex.unlock();
+
                 return response;
             }
         }
