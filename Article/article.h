@@ -67,5 +67,6 @@ std::string updateArticleCategory(Database *db, int id, int ownerId, std::string
 
 std::string removeArticle(Database *db, int id, Client *client);
 
+std::string getPurchaseHistory(Database *db, Client *client);
 
 #endif

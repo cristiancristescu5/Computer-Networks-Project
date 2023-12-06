@@ -101,6 +101,7 @@ int existsUser(Database *db, int id) {
     try {
         conn = db->getConnection();
     } catch (std::invalid_argument &e) {
+        sqlite3_close(db->getDB());
         std::cout << "[server]" << e.what() << std::endl;
         return 0;
     }
@@ -112,10 +113,12 @@ int existsUser(Database *db, int id) {
     conn = sqlite3_prepare_v2(db->getDB(), query, -1, &stmt, 0);
     conn = sqlite3_step(stmt);
     if (conn == SQLITE_ROW) {
+        sqlite3_finalize(stmt);
         free(query);
         return 1;
     }
-
+    sqlite3_finalize(stmt);
+    sqlite3_close(db->getDB());
     free(query);
     return -1;
 }
@@ -129,17 +132,22 @@ Client *loginUser(Database *db, const std::string &username, const std::string &
     try {
         conn = db->getConnection();
     } catch (std::invalid_argument &e) {
+        sqlite3_close(db->getDB());
         return nullptr;
     }
 
     conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, 0);
 
     if (conn != SQLITE_OK) {
+        sqlite3_close(db->getDB());
+        sqlite3_finalize(stmt);
         return nullptr;
     }
     Client *client;
     conn = sqlite3_step(stmt);
     if (conn != SQLITE_ROW) {
+        sqlite3_close(db->getDB());
+        sqlite3_finalize(stmt);
         return nullptr;
     }
     int id = sqlite3_column_int(stmt, 0);
@@ -147,7 +155,8 @@ Client *loginUser(Database *db, const std::string &username, const std::string &
     const char *pass = (const char *) sqlite3_column_text(stmt, 2);
     client = new Client(std::string(user), std::string(pass));
     client->setID(id);
-
+    sqlite3_close(db->getDB());
+    sqlite3_finalize(stmt);
     return client;
 }
 

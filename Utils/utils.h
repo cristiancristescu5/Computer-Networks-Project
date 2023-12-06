@@ -30,7 +30,7 @@ const std::vector<std::string> categories = {"vehicles", "electronic devices", "
 const std::string FORBIDDEN = "You cannot perform this action. Log in first.";
 
 //thread -> Client
-std::string handleClient(Client *client, Database *db, Command *command, std::mutex&);
+std::string handleClient(Client *client, Database *db, Command *command, std::mutex &);
 
 std::string login(Database *db, const std::string &name, const std::string &password, Client *client);
 
@@ -40,18 +40,6 @@ std::string logOut(Client *client);
 
 std::string addArticle(article *ad, Client *client, Database *db);
 
-std::string buyArticle(int articleId, int userId, Client *client);
-
-std::string getAllAds();
-
-std::string getAdsById(int adId);
-
-std::string getUserAds(int userId);
-
 std::string help();
-
-int isLogged(Client *client);
-
-std::string quit();
 
 #endif //PROJECT_UTILS_H

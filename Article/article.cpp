@@ -6,6 +6,7 @@
 #include <utility>
 #include <stdexcept>
 #include <format>
+#include <vector>
 
 #define QUERY_SIZE 1024
 
@@ -78,6 +79,7 @@ std::string article::toString() {
             .append("Id: ").append(std::to_string(this->id)).append("\n")
             .append("Owner: ").append(std::to_string(this->ownerID)).append("\n")
             .append("Price: ").append(std::to_string(this->price)).append("\n")
+            .append("Status: ").append(this->status).append("\n")
             .append("Category: ").append(this->category).append("\n")
             .append("Description: ").append(this->description)
             .append("\n-----------------------------------------------------------\n");
@@ -303,8 +305,9 @@ std::string getAllArticles(Database *db, std::string category) {
     }
 
     sqlite3_stmt *stmt;
-    std::string query = std::format("select id, title, description, price, status, owner_id, category from articles"
-                                    "where category = {}", category);
+    std::string query = std::format(
+            "select id, title, description, price, status, owner_id, category from articles where category = '{}';",
+            category);
     conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, nullptr);
 
     if (conn != SQLITE_OK) {
@@ -313,7 +316,7 @@ std::string getAllArticles(Database *db, std::string category) {
         return "Failed to fetch data";
     }
     std::string response;
-    while ((conn = sqlite3_step(stmt)) != SQLITE_ROW) {
+    while ((conn = sqlite3_step(stmt)) == SQLITE_ROW) {
         int id = sqlite3_column_int(stmt, 0);
         const char *title = (const char *) sqlite3_column_text(stmt, 1);
         const char *description = (const char *) sqlite3_column_text(stmt, 2);
@@ -327,6 +330,9 @@ std::string getAllArticles(Database *db, std::string category) {
     }
     sqlite3_close(db->getDB());
     sqlite3_finalize(stmt);
+    if (response.empty()) {
+        return "Empty";
+    }
     return response;
 }
 
@@ -353,17 +359,19 @@ std::string updateArticleDescription(Database *db, int id, int ownerId, std::str
     std::string query = std::format("update articles set description ='{}' where id = {} and owner_id = {};",
                                     newDescription, id, ownerId);
 
-    std ::cout<<query<<std::endl;
+    std::cout << query << std::endl;
+    char *error;
 
-    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, &error);
 
     delete article;
 
     if (conn != SQLITE_OK) {
+        std::cout << error << std::endl;
         return "Failed to update the article's description.";
     }
 
-    return "article's description updated successfully";
+    return "Article's description updated successfully";
 }
 
 std::string updateArticleTitle(Database *db, int id, int ownerId, std::string newTitle) {
@@ -386,18 +394,18 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, std::string ne
         return "You do not own this article.";
     }
 
-    std::string query = std::format("update articles set title = {} where id = {} and owner_id = {}",
+    std::string query = std::format("update articles set title = '{}' where id = {} and owner_id = {}",
                                     newTitle, id, ownerId);
 
     conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
 
     delete article;
 
-    if (conn != SQLITE_ROW) {
+    if (conn != SQLITE_OK) {
         return "Failed to update the article's title.";
     }
 
-    return "article's title updated successfully";
+    return "Article's title updated successfully";
 }
 
 std::string updateArticleCategory(Database *db, int id, int ownerId, std::string newCategory) {
@@ -420,17 +428,117 @@ std::string updateArticleCategory(Database *db, int id, int ownerId, std::string
         return "You do not own this article.";
     }
 
-    std::string query = std::format("update articles set category = {} where id = {} and owner_id = {}",
+    std::string query = std::format("update articles set category = '{}' where id = {} and owner_id = {}",
                                     newCategory, id, ownerId);
 
     conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
 
     delete article;
 
-    if (conn != SQLITE_ROW) {
+    if (conn != SQLITE_OK) {
         return "Failed to update the article's category.";
     }
 
-    return "article's category updated successfully";
+    return "Article's category updated successfully";
 }
 
+
+std::string buyArticle(Database *db, int articleId, Client *client) {
+    int conn;
+
+    try {
+        conn = db->getConnection();
+    } catch (std::invalid_argument &e) {
+        return "Failed to connect to database.";
+    }
+
+    article *article = getArticle(db, articleId);
+
+    if (article == nullptr) {
+        return "This article does not exist.";
+    }
+
+    if (article->getStatus() == "sold") {
+        return "This article is already sold.";
+    }
+
+    if (article->getOwnerId() == client->getId()) {
+        return "You cannot buy this article. You are the owner.";
+    }
+    delete article;
+    std::string query = std::format("update articles set status = 'sold' where id = {};", articleId);
+
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    if (conn != SQLITE_OK) {
+        return "Failed to buy the article";
+    }
+    query.clear();
+    query = std::format("insert into purchase_history(ad_id, user_id) values({}, {});", articleId, client->getId());
+
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    if (conn != SQLITE_OK) {
+        return "Failed to buy the article";
+    }
+    sqlite3_close(db->getDB());
+
+    return "Article bought successfully.";
+}
+
+std::vector<int> getArticlesID(Database *db, int userID){
+    int conn = db->getConnection();
+    std::vector<int> ids;
+    try{
+        conn = db->getConnection();
+    }catch (std::invalid_argument &e){
+        throw std::invalid_argument("Failed to connect to database");
+    }
+
+    std::string query = std::format("select ad_id from purchase_history where user_id = {};", userID);
+
+    sqlite3_stmt *stmt;
+
+    conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, 0);
+
+    if(conn != SQLITE_OK){
+        throw std::invalid_argument("Error with the database");
+    }
+
+    while((conn = sqlite3_step(stmt))==SQLITE_ROW){
+        int id = sqlite3_column_int(stmt, 0);
+        ids.push_back(id);
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db->getDB());
+    return ids;
+
+}
+
+std::string getPurchaseHistory(Database *db, Client *client){
+    std::vector<int> ids;
+    try{
+        ids = getArticlesID(db, client->getId());
+    }catch (std::invalid_argument &e){
+        return e.what();
+    }
+
+    if(ids.empty()){
+        return "Your purchase history is empty";
+    }
+
+    std::vector<article> articles;
+
+    for(int i : ids){
+        articles.push_back(*getArticle(db, i));
+    }
+
+    std::string response;
+
+    for(auto art : articles){
+        response.append(art.toString());
+    }
+
+    return response;
+}

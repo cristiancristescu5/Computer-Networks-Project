@@ -7,7 +7,6 @@
 
 
 std::string handleClient(Client *client, Database *db, Command *command, std::mutex &mutex) {
-    std::cout << client->getId() << std::endl;
     std::string response;
     if (command->getSize() == 1 && command->getCommand() == "help") {
         mutex.lock();
@@ -17,11 +16,27 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
         return response;
     }
     if (command->getSize() == 1 && command->getCommand() == "logout") {
-        mutex.lock();
-        response = logOut(client);
-        mutex.unlock();
+        if (client->getId() == -1) {
+            return FORBIDDEN;
+        } else {
 
-        return response;
+            mutex.lock();
+            response = logOut(client);
+            mutex.unlock();
+
+            return response;
+        }
+    }
+
+    if(command->getSize() == 1 && command->getTokens()[0] == "get_purchase_history"){
+        if(client->getId() == -1){
+            return FORBIDDEN;
+        }else{
+            mutex.lock();
+            response = getPurchaseHistory(db, client);
+            mutex.unlock();
+            return response;
+        }
     }
 
     if (command->getSize() == 1 && command->getTokens()[0] == "quit") {
@@ -43,6 +58,18 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             mutex.unlock();
 
             return response;
+        }
+        if (command->getTokens()[0] == "get_all_articles") {
+            if (client->getId() == -1) {
+                return FORBIDDEN;
+            } else {
+                if (command->getTokens()[1] == "-c") {
+                    mutex.lock();
+                    response = getAllArticles(db, command->getTokens()[2]);
+                    mutex.unlock();
+                    return response;
+                }
+            }
         }
     }
 
@@ -142,6 +169,22 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 response = removeArticle(db, id, client);
                 mutex.unlock();
 
+                return response;
+            }
+        }
+        if (command->getTokens()[0] == "buy") {
+            if (client->getId() == -1) {
+                return FORBIDDEN;
+            } else {
+                int artId;
+                try {
+                    artId = std::stoi(command->getTokens()[1]);
+                } catch (std::invalid_argument &e) {
+                    return "Invalid argument";
+                }
+                mutex.lock();
+                response = buyArticle(db, artId, client);
+                mutex.unlock();
                 return response;
             }
         }
