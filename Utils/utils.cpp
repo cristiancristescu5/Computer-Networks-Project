@@ -3,8 +3,10 @@
 #include <cstdlib>
 #include <cstdio>
 #include "utils.h"
-#include "../Article/article.h"
+#include <ranges>
+#include <algorithm>
 
+std::vector<Client*> clients;
 
 std::string handleClient(Client *client, Database *db, Command *command, std::mutex &mutex) {
     std::string response;
@@ -28,10 +30,10 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
         }
     }
 
-    if(command->getSize() == 1 && command->getTokens()[0] == "get_purchase_history"){
-        if(client->getId() == -1){
+    if (command->getSize() == 1 && command->getTokens()[0] == "get_purchase_history") {
+        if (client->getId() == -1) {
             return FORBIDDEN;
-        }else{
+        } else {
             mutex.lock();
             response = getPurchaseHistory(db, client);
             mutex.unlock();
@@ -209,7 +211,12 @@ std::string login(Database *db, const std::string &name, const std::string &pass
         return "User is already logged in.";
     }
 
+
     auto *loggedClient = loginUser(db, name, password);
+
+    if (isLogged(loggedClient) == 1) {
+        return "User is already logged in.";
+    }
 
     if (loggedClient == nullptr) {
         return "The user with this username and password does not exist.";
@@ -218,6 +225,7 @@ std::string login(Database *db, const std::string &name, const std::string &pass
     client->setID(loggedClient->getId());
     client->setName(loggedClient->getName());
     client->setPassword(loggedClient->getPassword());
+    clients.push_back(client);
     client->printClient();
     return "User logged in successfully";
 }
@@ -247,10 +255,34 @@ std::string logOut(Client *client) {
         return "You are not logged in.";
     }
 
+
+    auto it  = std::find(clients.begin(), clients.end(), client);
+    if(it != clients.end()){
+        clients.erase(it);
+    }
+
     client->removeName();
     client->getPassword();
     client->setID(-1);
 
     return "You logged out successful";
+}
+
+int isLogged(Client *client) {
+    if (clients.empty()) {
+        return 0;
+    }
+
+    for ( auto c: clients) {
+        std::cout<<"aiiiiiiiiici: ";
+        c->printClient();
+        std::cout<<std::endl;
+
+        if (client->getId() == c->getId()) {
+            printf("aici\n");
+            return 1;
+        }
+    }
+    return 0;
 }
 

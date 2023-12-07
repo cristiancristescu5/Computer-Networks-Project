@@ -1,7 +1,7 @@
 //
 // Created by cristi on 12/2/23.
 //
-
+#pragma once
 #ifndef PROJECT_UTILS_H
 #define PROJECT_UTILS_H
 
@@ -12,6 +12,8 @@
 #include "../Article/article.h"
 #include <vector>
 #include <mutex>
+
+extern std::vector<Client*> clients;
 
 struct thData {
     int idThread;
@@ -41,5 +43,7 @@ std::string logOut(Client *client);
 std::string addArticle(article *ad, Client *client, Database *db);
 
 std::string help();
+
+int isLogged(Client *client);
 
 #endif //PROJECT_UTILS_H

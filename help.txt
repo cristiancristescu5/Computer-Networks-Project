@@ -1,7 +1,8 @@
 ------------------------------------------------------------------
 Commands available on this server:
 >login <username> <password>: enters your account on the server
->register <username> <password>: only creates an account, you can create an account only if you are not logged in the server
+>register <username> <password>: only creates an account,
+                    you can create an account only if you are not logged in the server
 >add_article <name> <description> <price> <category>: adds a new article
 >buy_article <article_id>: buys the article if it is unsold
 >get_all_articles <flags(-u | -a)>: prints all the available articles

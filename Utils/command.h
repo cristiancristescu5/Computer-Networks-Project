@@ -14,7 +14,7 @@ private:
     std::string command;
     std::vector<std::string> tokens;
 public:
-    Command(char *command);
+    explicit Command(char *command);
 
     std::string getCommand();
 

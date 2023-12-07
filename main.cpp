@@ -1,8 +1,6 @@
-#include <iostream>
 #include "Client/client.h"
 #include "Database/database.h"
 #include <vector>
-#include "Article/article.h"
 #include "Utils/utils.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,7 +8,6 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
-#include <cstdlib>
 #include <pthread.h>
 #include <mutex>
 
@@ -35,7 +32,6 @@ int main() {
     int i = 0;
     std::mutex mutex;
 
-//    std::cout<<help()<<std::endl;
 
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("[server]Socket error.\n");
@@ -77,9 +73,8 @@ int main() {
 
         td = new thData(i, client, db, new Client(client), mutex);
 
-
         pthread_create(&th[i], nullptr, &treat, td);
-
+        i++;
     }
 }
 

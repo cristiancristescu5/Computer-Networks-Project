@@ -159,4 +159,3 @@ Client *loginUser(Database *db, const std::string &username, const std::string &
     sqlite3_finalize(stmt);
     return client;
 }
-
