@@ -8,7 +8,7 @@ Commands available on this server:
 >get_all_articles <flags(-u | -a)>: prints all the available articles
                 -> -u: to get your articles
                 -> -a: to get all available articles
->update article <article_id> <flags(-d | -c | -n)>: updates an existing article
+>update article <article_id> <flags( -d | -c | -n | -p )>: updates an existing article
                 -> -d: to update the description of the article
                 -> -c: to update the category of the article
                 -> -n: to update the name of the article
@@ -18,3 +18,4 @@ Commands available on this server:
 >logout
 >quit
 ------------------------------------------------------------------
+get_all_article -p down up

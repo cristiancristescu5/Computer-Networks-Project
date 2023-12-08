@@ -6,7 +6,7 @@
 #include <ranges>
 #include <algorithm>
 
-std::vector<Client*> clients;
+std::vector<Client *> clients;
 
 std::string handleClient(Client *client, Database *db, Command *command, std::mutex &mutex) {
     std::string response;
@@ -76,6 +76,21 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
     }
 
     if (command->getSize() == 4) {
+        if(command->getTokens()[0] == "get_all_articles" && command->getTokens()[1] == "-p"){
+            if(client->getId() == -1){
+                return FORBIDDEN;
+            }
+            float down, up;
+            try{
+                down = std::stof(command->getTokens()[2]);
+                up = std::stof(command->getTokens()[3]);
+            }catch (std::invalid_argument &e){
+                return "Invalid argument";
+            }
+            mutex.lock();
+            response = getAllArticles(db, down, up);
+            mutex.unlock();
+        }
         if (command->getTokens()[0] == "update_article") {
             if (client->getId() == -1) {
 
@@ -96,10 +111,12 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 return response;
             }
             if (command->getTokens()[1] == "-c") {
+                if (std::ranges::find(categories, command->getTokens()[3]) == categories.end()) {
+                    return "Invalid category.";
+                }
                 mutex.lock();
                 response = updateArticleCategory(db, artId, client->getId(), command->getTokens()[3]);
                 mutex.unlock();
-
                 return response;
             }
             if (command->getTokens()[1] == "-t") {
@@ -107,6 +124,21 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 response = updateArticleTitle(db, artId, client->getId(), command->getTokens()[3]);
                 mutex.unlock();
 
+                return response;
+            }
+            if (command->getTokens()[1] == "-p") {
+                float price;
+                try {
+                    price = std::stof(command->getTokens()[3]);
+                } catch (std::invalid_argument &e) {
+                    return "Invalid price";
+                }
+                if (client->getId() == -1) {
+                    return FORBIDDEN;
+                }
+                mutex.lock();
+                response = updateArticlePrice(db, artId, client->getId(), price);
+                mutex.unlock();
                 return response;
             }
         }
@@ -155,7 +187,6 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 return FORBIDDEN;
             }
         }
-
         if (command->getTokens()[0] == "remove_article") {
             if (client->getId() == -1) {
 
@@ -256,8 +287,8 @@ std::string logOut(Client *client) {
     }
 
 
-    auto it  = std::find(clients.begin(), clients.end(), client);
-    if(it != clients.end()){
+    auto it = std::find(clients.begin(), clients.end(), client);
+    if (it != clients.end()) {
         clients.erase(it);
     }
 
@@ -273,13 +304,9 @@ int isLogged(Client *client) {
         return 0;
     }
 
-    for ( auto c: clients) {
-        std::cout<<"aiiiiiiiiici: ";
-        c->printClient();
-        std::cout<<std::endl;
+    for (auto c: clients) {
 
         if (client->getId() == c->getId()) {
-            printf("aici\n");
             return 1;
         }
     }

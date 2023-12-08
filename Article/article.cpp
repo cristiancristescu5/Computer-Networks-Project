@@ -542,3 +542,69 @@ std::string getPurchaseHistory(Database *db, Client *client){
 
     return response;
 }
+
+std::string updateArticlePrice(Database *db, int id, int ownerId, float price){
+    int conn;
+    try{
+        conn = db->getConnection();
+    }catch (std::invalid_argument &e){
+        return "Failed to connect to database";
+    }
+
+    auto *article = getArticle(db, id);
+    if(article == nullptr){
+        return "The article does not exist.";
+    }
+
+    if(article->getOwnerId() != ownerId){
+        return "You do not own this article";
+    }
+    std::string query = std::format("update articles set price = {} where id = {};", price,article->getId());
+    conn = sqlite3_exec(db->getDB(), query.c_str(), nullptr, nullptr, nullptr);
+
+    if(conn != SQLITE_OK) {
+        sqlite3_close(db->getDB());
+        return "Failed to update the article";
+    }
+    sqlite3_close(db->getDB());
+    return "The price of the article was updates successfully";
+}
+
+std::string getAllArticles(Database *db, float down, float up){
+    int conn;
+    try{
+        conn = db->getConnection();
+    }catch (std::invalid_argument &e){
+        return "Failed to connect to database";
+    }
+
+    sqlite3_stmt *stmt;
+    std::string query = std::format("elect id, title, description, price, status, owner_id, category from articles where price <={} and price >= {}", up, down);
+
+    conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, 0);
+
+    if (conn != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db->getDB());
+        return "Failed to fetch data";
+    }
+
+    std::string response;
+    while((conn = sqlite3_step(stmt))==SQLITE_ROW){
+        int id = sqlite3_column_int(stmt, 0);
+        const char *title = (const char *) sqlite3_column_text(stmt, 1);
+        const char *description = (const char *) sqlite3_column_text(stmt, 2);
+        auto price = (float) sqlite3_column_double(stmt, 3);
+        const char *status = (const char *) sqlite3_column_text(stmt, 4);
+        int ownerId = sqlite3_column_int(stmt, 5);
+        const char *cat = (const char *) sqlite3_column_text(stmt, 6);
+        auto *ad = new article(id, title, description, price, ownerId, status, cat);
+        response.append(ad->toString());
+        delete (ad);
+    }
+    sqlite3_close(db->getDB());
+    sqlite3_finalize(stmt);
+    return response;
+
+}
+

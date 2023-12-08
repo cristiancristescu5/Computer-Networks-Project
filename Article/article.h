@@ -65,6 +65,8 @@ std::string updateArticleTitle(Database *db, int id, int ownerId, std::string ne
 
 std::string updateArticleCategory(Database *db, int id, int ownerId, std::string newCategory);
 
+std::string updateArticlePrice(Database *db, int id, int ownerId, float price);
+
 std::string removeArticle(Database *db, int id, Client *client);
 
 std::string getPurchaseHistory(Database *db, Client *client);
