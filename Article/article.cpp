@@ -118,11 +118,11 @@ std::string addArticle(article *advertisement, int ownerId, Database *db) {
     sprintf(q, "insert into articles(title,description, price, owner_id, category) values('%s','%s', %f, %d, '%s')",
             advertisement->getTitle().c_str(), advertisement->getDescription().c_str(), advertisement->getPrice(),
             ownerId,
-            advertisement->getCategory().c_str());//preparing the query
+            advertisement->getCategory().c_str());
 
-    conn = sqlite3_exec(db->getDB(), q, nullptr, nullptr, &errmsg);//executing the query
+    conn = sqlite3_exec(db->getDB(), q, nullptr, nullptr, &errmsg);
 
-    sqlite3_close(db->getDB());//closing connection
+    sqlite3_close(db->getDB());
     delete advertisement;
     if (conn == SQLITE_OK) {
         return "The advertisement has been published successfully.";
@@ -579,7 +579,7 @@ std::string getAllArticles(Database *db, float down, float up){
     }
 
     sqlite3_stmt *stmt;
-    std::string query = std::format("elect id, title, description, price, status, owner_id, category from articles where price <={} and price >= {}", up, down);
+    std::string query = std::format("select id, title, description, price, status, owner_id, category from articles where price <={} and price >= {}", up, down);
 
     conn = sqlite3_prepare_v2(db->getDB(), query.c_str(), -1, &stmt, 0);
 
@@ -607,4 +607,3 @@ std::string getAllArticles(Database *db, float down, float up){
     return response;
 
 }
-

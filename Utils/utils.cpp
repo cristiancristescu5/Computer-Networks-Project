@@ -84,12 +84,15 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             try{
                 down = std::stof(command->getTokens()[2]);
                 up = std::stof(command->getTokens()[3]);
+                std::cout<<"aici"<<std::endl;
             }catch (std::invalid_argument &e){
                 return "Invalid argument";
             }
             mutex.lock();
             response = getAllArticles(db, down, up);
+            std::cout<<"aici"<<std::endl;
             mutex.unlock();
+            return response;
         }
         if (command->getTokens()[0] == "update_article") {
             if (client->getId() == -1) {
@@ -150,9 +153,7 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             float price;
             try {
                 price = std::stof(command->getTokens()[3]);
-            } catch (
-                    std::invalid_argument &e
-            ) {
+            } catch (std::invalid_argument &e) {
                 return "Invalid price.";
             }
             std::string category = command->getTokens()[4];
@@ -187,7 +188,7 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
                 return FORBIDDEN;
             }
         }
-        if (command->getTokens()[0] == "remove_article") {
+        if (command->getTokens()[0] == "remove") {
             if (client->getId() == -1) {
 
                 return FORBIDDEN;
@@ -222,7 +223,8 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             }
         }
     }
-    return "Invalid command.";
+    response.append("Invalid command.");
+    return response;
 }
 
 std::string help() {
@@ -257,7 +259,7 @@ std::string login(Database *db, const std::string &name, const std::string &pass
     client->setName(loggedClient->getName());
     client->setPassword(loggedClient->getPassword());
     clients.push_back(client);
-    client->printClient();
+//    client->printClient();
     return "User logged in successfully";
 }
 

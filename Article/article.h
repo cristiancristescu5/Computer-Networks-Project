@@ -55,7 +55,7 @@ std::string getAllArticles(Database *db, int ownerID);
 
 std::string getAllArticles(Database *db, std::string category);
 
-std::string getAllArticles(Database *db, float down, float up); //-p
+std::string getAllArticles(Database *db, float down, float up);
 
 std::string buyArticle(Database *db, int id, Client *client);
 

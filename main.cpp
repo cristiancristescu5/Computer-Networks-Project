@@ -13,7 +13,7 @@
 
 const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
 
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 10000
 
 #define PORT 2908
 
@@ -100,8 +100,11 @@ void execute(void *arg) {
     while (1) {
         if (read(tdL.cl, &buffer, BUFFER_SIZE) <= 0) {
             printf("[Thread %d]\n", tdL.idThread);
-            perror("Error reading from the client.\n");
+//            perror("Error reading from the client.\n");
+            close(client->getClientSocket());
+            break;
         }
+
 
         printf("[Thread %d]Message from client: %s\n", tdL.idThread, buffer);
 
@@ -109,24 +112,26 @@ void execute(void *arg) {
 
         bzero(buffer, BUFFER_SIZE);
 
-        strcpy(buffer, handleClient(client, db, command, tdL.mutex).c_str());
-
+        std::string response;
+        response = handleClient(client, db, command, tdL.mutex);
+        std::cout<<"aici"<<std::endl;
         delete command;
 
         printf("[Thread %d]Sending back to client:%s\n", tdL.idThread, buffer);
 
 
-        if (write(tdL.cl, &buffer, BUFFER_SIZE) <= 0) {
+        if (write(tdL.cl, response.c_str(), response.size()) <= 0) {
             printf("[Thread %d] ", tdL.idThread);
-            perror("[Thread]Error writing to the client.\n");
+//            perror("[Thread]Error writing to the client.\n");
+            close(client->getClientSocket());
+            break;
         } else {
             printf("[Thread %d]Message sent successfully.\n", tdL.idThread);
         }
-        if(strstr(buffer, "left") != nullptr){
+        if(strstr(response.c_str(), "left") != nullptr){
             close(tdL.cl);
             break;
         }
-        bzero(buffer, sizeof(buffer));
     }
 
 }
