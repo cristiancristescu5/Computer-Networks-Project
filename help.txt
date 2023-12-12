@@ -11,7 +11,7 @@ Commands available on this server:
                 -> -a: to get all available articles
                 -> -c: to filter articles by category
                 -> -p <low> <up>: to show articles in a price range
->update article <article_id> <flags( -d | -c | -t | -p )>: updates an existing article
+>update_article <article_id> <flags( -d | -c | -t | -p )>: updates an existing article
                 -> -d: to update the description of the article
                 -> -c: to update the category of the article
                 -> -t: to update the title of the article

@@ -7,7 +7,7 @@
 #include "string"
 
 
-Command::Command(char *command) {
+Command::Command(char* command) {
     this->command = command;
     std::regex rgx("\"([^\"]*)\"|(\\S+)");
     std::smatch match;

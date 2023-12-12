@@ -22,7 +22,9 @@ struct thData {
     Client *user;
     std::mutex &mutex;
 
-    thData(int id, int c, Database *d, Client *us, std::mutex &m) : mutex(m), idThread(id), cl(c), db(d), user(us) {};
+    thData(int id, int c, Database *d,
+           Client *us, std::mutex &m) : mutex(m),
+           idThread(id), cl(c), db(d), user(us) {};
 };
 
 const std::string vec_status[] = {"sold", "unsold"};

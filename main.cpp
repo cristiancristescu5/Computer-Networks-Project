@@ -15,7 +15,7 @@ const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
 
 #define BUFFER_SIZE 10000
 
-#define PORT 2908
+#define PORT 4024
 
 extern int errno;
 
@@ -100,7 +100,6 @@ void execute(void *arg) {
     while (1) {
         if (read(tdL.cl, &buffer, BUFFER_SIZE) <= 0) {
             printf("[Thread %d]\n", tdL.idThread);
-//            perror("Error reading from the client.\n");
             close(client->getClientSocket());
             break;
         }
@@ -113,8 +112,9 @@ void execute(void *arg) {
         bzero(buffer, BUFFER_SIZE);
 
         std::string response;
+
         response = handleClient(client, db, command, tdL.mutex);
-        std::cout<<"aici"<<std::endl;
+
         delete command;
 
         printf("[Thread %d]Sending back to client:%s\n", tdL.idThread, buffer);
@@ -122,7 +122,6 @@ void execute(void *arg) {
 
         if (write(tdL.cl, response.c_str(), response.size()) <= 0) {
             printf("[Thread %d] ", tdL.idThread);
-//            perror("[Thread]Error writing to the client.\n");
             close(client->getClientSocket());
             break;
         } else {

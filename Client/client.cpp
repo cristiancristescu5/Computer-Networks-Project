@@ -78,6 +78,12 @@ void Client::removeName(){
 std::string addUser(Database *db, const std::string &username, const std::string &password) {
     char *errmsg = nullptr;
     std::string query;
+    if(username.size() <= 2){
+        return "Username too short.";
+    }
+    if(password.size() <= 2){
+        return "Password too short";
+    }
     query.append("insert into users(username, password) values('")
             .append(username).append("'")
             .append(",")
