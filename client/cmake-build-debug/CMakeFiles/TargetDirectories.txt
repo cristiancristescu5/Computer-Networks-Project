@@ -1,3 +1,0 @@
-/home/cristi/Desktop/marketplace/client/cmake-build-debug/CMakeFiles/client.dir
-/home/cristi/Desktop/marketplace/client/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/cristi/Desktop/marketplace/client/cmake-build-debug/CMakeFiles/rebuild_cache.dir

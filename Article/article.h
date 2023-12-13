@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include "../Database/database.h"
-#include "../Client/client.h"
+#include "../User/client.h"
 
 class article {
 private:

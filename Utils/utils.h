@@ -7,7 +7,7 @@
 
 #include <string>
 #include <array>
-#include "../Client/client.h"
+#include "../User//client.h"
 #include "command.h"
 #include "../Article/article.h"
 #include <vector>
@@ -27,13 +27,11 @@ struct thData {
            idThread(id), cl(c), db(d), user(us) {};
 };
 
-const std::string vec_status[] = {"sold", "unsold"};
 const std::vector<std::string> categories = {"vehicles", "electronic devices", "beauty", "household", "sport",
                                              "miscellaneous"};
 
 const std::string FORBIDDEN = "You cannot perform this action. Log in first.";
 
-//thread -> Client
 std::string handleClient(Client *client, Database *db, Command *command, std::mutex &);
 
 std::string login(Database *db, const std::string &name, const std::string &password, Client *client);

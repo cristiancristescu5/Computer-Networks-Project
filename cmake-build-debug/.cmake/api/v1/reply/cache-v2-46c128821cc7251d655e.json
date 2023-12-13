@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/cristi/Desktop/marketplace/client/cmake-build-debug"
+			"value" : "/home/cristi/Desktop/marketplace/project/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -543,7 +543,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/cristi/Desktop/marketplace/client/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/home/cristi/Desktop/marketplace/project/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -603,7 +603,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/cristi/Desktop/marketplace/client"
+			"value" : "/home/cristi/Desktop/marketplace/project"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -843,7 +843,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "client"
+			"value" : "project"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1138,7 +1138,7 @@
 			"value" : "TRUE"
 		},
 		{
-			"name" : "client_BINARY_DIR",
+			"name" : "project_BINARY_DIR",
 			"properties" : 
 			[
 				{
@@ -1147,10 +1147,10 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/cristi/Desktop/marketplace/client/cmake-build-debug"
+			"value" : "/home/cristi/Desktop/marketplace/project/cmake-build-debug"
 		},
 		{
-			"name" : "client_IS_TOP_LEVEL",
+			"name" : "project_IS_TOP_LEVEL",
 			"properties" : 
 			[
 				{
@@ -1162,7 +1162,7 @@
 			"value" : "ON"
 		},
 		{
-			"name" : "client_SOURCE_DIR",
+			"name" : "project_SOURCE_DIR",
 			"properties" : 
 			[
 				{
@@ -1171,7 +1171,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/cristi/Desktop/marketplace/client"
+			"value" : "/home/cristi/Desktop/marketplace/project"
 		}
 	],
 	"kind" : "cache",

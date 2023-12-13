@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <cstdlib>
 #include <cstdio>
@@ -84,13 +83,11 @@ std::string handleClient(Client *client, Database *db, Command *command, std::mu
             try{
                 down = std::stof(command->getTokens()[2]);
                 up = std::stof(command->getTokens()[3]);
-                std::cout<<"aici"<<std::endl;
             }catch (std::invalid_argument &e){
                 return "Invalid argument";
             }
             mutex.lock();
             response = getAllArticles(db, down, up);
-            std::cout<<"aici"<<std::endl;
             mutex.unlock();
             return response;
         }

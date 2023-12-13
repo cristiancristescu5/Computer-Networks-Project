@@ -51,8 +51,6 @@ std::string addUser(Database *db, const std::string &username, const std::string
 
 Client *loginUser(Database *db, const std::string &username, const std::string &password);
 
-void deleteUser(Database db, Client *client);
-
 int existsUser(Database *, int);
 
 #endif //PROJECT_CLIENT_H

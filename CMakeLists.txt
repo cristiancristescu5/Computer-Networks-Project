@@ -4,8 +4,8 @@ project(project)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(project main.cpp
-        Client/client.h
-        Client/client.cpp
+        User/client.h
+        User/client.cpp
         Database/database.h
         Database/database.cpp
         Article/article.h
