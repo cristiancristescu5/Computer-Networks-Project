@@ -15,7 +15,7 @@ const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
 
 #define BUFFER_SIZE 10000
 
-#define PORT 4024
+#define PORT 4025
 
 extern int errno;
 
@@ -99,6 +99,7 @@ void execute(void *arg) {
     Client *client = tdL.user;
     while (1) {
         if (read(tdL.cl, &buffer, BUFFER_SIZE) <= 0) {
+            logOut(client);
             printf("[Thread %d]\n", tdL.idThread);
             close(client->getClientSocket());
             break;
@@ -117,17 +118,19 @@ void execute(void *arg) {
 
         delete command;
 
-        printf("[Thread %d]Sending back to client:%s\n", tdL.idThread, buffer);
+        printf("[Thread %d]Sending back to client:%s\n", tdL.idThread, response.c_str());
 
 
         if (write(tdL.cl, response.c_str(), response.size()) <= 0) {
+            logOut(client);
             printf("[Thread %d] ", tdL.idThread);
             close(client->getClientSocket());
             break;
         } else {
             printf("[Thread %d]Message sent successfully.\n", tdL.idThread);
         }
-        if(strstr(response.c_str(), "left") != nullptr){
+        if(response == "You left the server."){
+            logOut(client);
             close(tdL.cl);
             break;
         }
