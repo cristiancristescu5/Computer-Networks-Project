@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include <mutex>
 
-const char *DBURL = "/home/cristi/Desktop/marketplace/marketplace.db";
+const char *DBURL = "marketplace.db";
 
 #define BUFFER_SIZE 10000
 
